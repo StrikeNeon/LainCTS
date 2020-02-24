@@ -200,7 +200,7 @@ class lainChan:
                         res = urllib.parse.quote(res)
                         retrieveURL = BOARDurl+res
                         urllib.request.urlretrieve(retrieveURL, pic_folder+'\{}'.format(name))
-		if '.gif' in res:
+                if'.gif' in res:
                     if 'http://imgops' not in res and 'http://exif.regex.info/' not in res and 'http://iqdb.org/?url=' not in res:
                         name = after(res, 'src/')
                         res = urllib.parse.quote(res)
@@ -346,3 +346,35 @@ class lainChan:
 #running TS
 #board = lainChan
 #board.ThreadSimulator()
+                
+def spiderchan():
+    '''
+    retrieves board urls on keyword, filters sit-on domains
+    you will need a dictionary txt
+    '''
+    links = []
+    ending = ['.org', '.com']     
+    dictionary = ['4','lain']
+    #dfile = open('dictionary.txt', 'r')
+    #dictionary = dfile.readlines()
+    for word in dictionary:
+        for adress in ending:
+            link = "http://{}chan{}".format(word, adress)  
+            try:
+                r = requests.get(link)
+                soup = BeautifulSoup(r.content, 'html5lib')
+                if 'domain' and 'for sale' in soup.prettify():
+                    continue
+                else:
+                    history = r.history
+                    for item in history:
+                        code = item.status_code
+                        if code != 302:
+                            links.append(link)
+                    else: 
+                        continue
+            except requests.exceptions.ConnectionError:
+                continue
+    return links
+
+#print(spiderchan())
