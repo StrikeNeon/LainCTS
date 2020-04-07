@@ -5,7 +5,6 @@ import urllib
 import urllib.request
 import urllib.parse
 import requests
-#import threading
 from bs4 import BeautifulSoup
 import pyttsx3
 import os
@@ -20,17 +19,27 @@ import os
 #------------------------------------------------------------------------------
 class lainChan():
     
-    def __init__(self):
-        self.BOARDurl = 'https://www.lainchan.org'
+    scriptDIR = os.path.dirname(__file__)
+    pic_folder = os.path.join(scriptDIR, 'PICS')
+    text_folder = os.path.join(scriptDIR, 'TEXTS')
+    pdf_folder = os.path.join(scriptDIR, 'PDFS')
+    swf_folder = os.path.join(scriptDIR, 'SWF')
+    webm_folder = os.path.join(scriptDIR, 'WEBM')
+    gif_folder = os.path.join(scriptDIR, 'GIFS')
+    tesfolder = os.path.join(scriptDIR, 'test')
+    
+    BOARDurl = 'https://www.lainchan.org'
+    #def __init__(self):
+
         #getting program and resouce paths
-        self.scriptDIR = os.path.dirname(__file__)
-        self.pic_folder = os.path.join(self.scriptDIR, 'PICS')
-        self.text_folder = os.path.join(self.scriptDIR, 'TEXTS')
-        self.pdf_folder = os.path.join(self.scriptDIR, 'PDFS')
-        self.swf_folder = os.path.join(self.scriptDIR, 'SWF')
-        self.webm_folder = os.path.join(self.scriptDIR, 'WEBM')
-        self.gif_folder = os.path.join(self.scriptDIR, 'GIFS')
-        self.tesfolder = os.path.join(self.scriptDIR, 'test')
+        #self.scriptDIR = os.path.dirname(__file__)
+        #self.pic_folder = os.path.join(self.scriptDIR, 'PICS')
+        #self.text_folder = os.path.join(self.scriptDIR, 'TEXTS')
+        #self.pdf_folder = os.path.join(self.scriptDIR, 'PDFS')
+        #self.swf_folder = os.path.join(self.scriptDIR, 'SWF')
+        #self.webm_folder = os.path.join(self.scriptDIR, 'WEBM')
+        #self.gif_folder = os.path.join(self.scriptDIR, 'GIFS')
+        #self.tesfolder = os.path.join(self.scriptDIR, 'test')
 
     def after(self,value, a):
         # Find and validate first part.
@@ -53,14 +62,14 @@ class lainChan():
         if adjusted_pos_a >= pos_b: return ""
         return value[adjusted_pos_a:pos_b]
 
-    def get_boards(self, BOARDurl):
+    def get_boards(self):
         '''
         This will retrieve the boards from the header
         '''
         unformated = []
         formated = []
         
-        result = requests.get(BOARDurl)
+        result = requests.get(lainChan.BOARDurl)
         catalog = result.content
         soup = BeautifulSoup(catalog, 'html5lib')
         links = soup.find_all('a')
@@ -75,7 +84,7 @@ class lainChan():
         return unformated, formated    
       
 
-    def get_threads(BOARDurl, boardNAME):
+    def get_threads(self, boardNAME):
     
         """
         This extracts the thread catalogue,
@@ -83,7 +92,7 @@ class lainChan():
         """
     
         #url goes here
-        url = urllib.request.urlopen(BOARDurl +'/'+boardNAME+'/catalog.html')
+        url = urllib.request.urlopen(lainChan.BOARDurl +'/'+boardNAME+'/catalog.html')
         #whole html
         catalog = url.read()
         #formated html into BS object
@@ -98,7 +107,7 @@ class lainChan():
 
 
 
-    def get_op_post(threads, threadnum):
+    def get_op_post(self, threads, threadnum):
 
        """
        This will extract the op post
@@ -122,7 +131,7 @@ class lainChan():
 
 
 
-    def get_texts_and_resources(threads, threadnum):
+    def get_texts_and_resources(self, threads, threadnum):
     
         """
         This will extract thread posts and resourses (images, pdfs etc.)
@@ -163,7 +172,7 @@ class lainChan():
         return (texts, resourses)
   
 
-    def getresources(self, BOARDurl, THresLinks):
+    def getresources(self, THresLinks):
     
         '''
         This will download resources into appropriate folders
@@ -176,13 +185,13 @@ class lainChan():
                     if 'http://imgops' not in res and 'http://exif.regex.info/' not in res and 'http://iqdb.org/?url=' not in res:
                         name = self.after(res, 'src/')
                         res = urllib.parse.quote(res)
-                        retrieveURL = BOARDurl+res
+                        retrieveURL = lainChan.BOARDurl+res
                         urllib.request.urlretrieve(retrieveURL, lainChan.pic_folder+'\{}'.format(name))
                 if '.pdf' in res:
                     if 'http://imgops' not in res and 'http://exif.regex.info/' not in res and 'http://iqdb.org/?url=' not in res:
                         name = res[6:]
                         res = urllib.parse.quote(res)
-                        retrieveURL = BOARDurl+res
+                        retrieveURL = lainChan.BOARDurl+res
                         urllib.request.urlretrieve(retrieveURL, lainChan.pdf_folder+'{}'.format(name))
                 else:
                     pass
@@ -190,7 +199,7 @@ class lainChan():
             except PermissionError:pass
         
 
-    def op_talk(texts):
+    def op_talk(self, texts):
     
         """
         This will voice the thread
@@ -204,7 +213,7 @@ class lainChan():
         talker.stop()
         
         
-    def talk(texts, idx):
+    def talk(self, texts, idx):
 
         """
         This will voice the thread
@@ -225,7 +234,10 @@ class lainChan():
                 talker.runAndWait()
                 talker.stop()
             else:pass
-                
+
+lain = lainChan()    
+boardname = lain.get_boards()[1][0]
+print(lain.get_threads(boardname))   
                 
 def spiderchan():
     '''
