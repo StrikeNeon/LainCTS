@@ -31,26 +31,26 @@ class App(npyscreen.NPSAppManaged):
         self.addForm("OP", OPForm, name="Operations")
         
 class SelectOneBox(npyscreen.BoxTitle):
-    # SelectOne теперь будет окружен боксом
+    # SelectOne is now boxed
     _contained_widget = npyscreen.SelectOne
 
 class SelectMultyBox(npyscreen.BoxTitle):
-    # MultiSelect теперь будет окружен боксом
+    # MultiSelect is now boxed
     _contained_widget = npyscreen.MultiSelect
 
 class OutputBox(npyscreen.BoxTitle):
-    # MultiLineEdit теперь будет окружен боксом
+    # MultiLineEdit is now boxed
     _contained_widget = npyscreen.MultiLineEdit 
 
 
 class MainForm(npyscreen.ActionForm):
-    # Конструктор
+    # constructor
     def create(self):
 
-    # Добавляем виджет TitleText/TitleSelectOne на форму
+    # TitleText/TitleSelectOne added to the form
         self.title = self.add(npyscreen.TitleText, name="Press ok to begin")
         self.boards = self.add(npyscreen.TitleSelectOne, scroll_exit=True, name='Choose board', values = CTS.get_boards()[0])
-    # переопределенный метод, срабатывающий при нажатии на кнопку «cancel»
+    # cancel method
     def on_cancel(self):
         ok_cancel = npyscreen.notify_yes_no("Are you sure you want to exit?", "Warning", editw=2)
         if ok_cancel:
@@ -59,7 +59,7 @@ class MainForm(npyscreen.ActionForm):
         else:
             self.parentApp.setNextFormPrevious
         
-    # переопределенный метод, срабатывающий при нажатии на кнопку «ok»
+    # ok method
     def on_ok(self):
         try:
             Operations = self.parentApp.getForm("OP")
