@@ -4,7 +4,6 @@
 import urllib
 import urllib.request
 import urllib.parse
-import requests
 from bs4 import BeautifulSoup
 import pyttsx3
 import os
@@ -69,8 +68,8 @@ class lainChan():
         unformated = []
         formated = []
         
-        result = requests.get(lainChan.BOARDurl)
-        catalog = result.content
+        result = urllib.request.urlopen(lainChan.BOARDurl)
+        catalog = result.read()
         soup = BeautifulSoup(catalog, 'html5lib')
         links = soup.find_all('a')
         for link in links:
@@ -235,9 +234,10 @@ class lainChan():
                 talker.stop()
             else:pass
 
-lain = lainChan()    
-boardname = lain.get_boards()[1][0]
-print(lain.get_threads(boardname))   
+#DEBUG CODE HERE
+#lain = lainChan()    
+#boardname = lain.get_boards()[1][0]
+#print(lain.get_threads(boardname))   
                 
 def spiderchan():
     '''
@@ -253,8 +253,8 @@ def spiderchan():
         for adress in ending:
             link = "http://{}chan{}".format(word, adress)  
             try:
-                r = requests.get(link)
-                soup = BeautifulSoup(r.content, 'html5lib')
+                r = urllib.request.urlopen(link)
+                soup = BeautifulSoup(r.read(), 'html5lib')
                 if 'domain' and 'for sale' in soup.prettify():
                     continue
                 else:
@@ -265,7 +265,7 @@ def spiderchan():
                             links.append(link)
                     else: 
                         continue
-            except requests.exceptions.ConnectionError:
+            except urllib.error.HTTPError:
                 continue
     return links
 
